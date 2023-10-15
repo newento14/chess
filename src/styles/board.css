@@ -1,0 +1,22 @@
+.board {
+    width: calc(64px * 8);
+    height: calc(64px * 8);
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.cell {
+    width: 64px;
+    height: 64px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.board .black {
+    background-color: #749759
+}
+
+.board .white {
+    background-color: #eeefd3;
+}
