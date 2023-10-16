@@ -2,9 +2,13 @@ import React, {FC, useEffect, useState} from 'react';
 import {Colors, ICell, Pieces} from "../types/cell";
 import Cell from "./board/cell";
 import '../styles/board.css'
+import {useDispatch, useSelector} from "react-redux";
+import {useTypedSelector} from "../hooks/useTypedSelector";
+import {ActionTypes} from "../types/boardReducer";
 
 const Board: FC = () => {
-    const [board, setBoard] = useState<ICell[][]>([[]])
+    const dispatch = useDispatch();
+    const board = useTypedSelector(x => x.board.board);
 
     function fillBoard() {
         const tempBoard: ICell[][] = [];
@@ -15,7 +19,7 @@ const Board: FC = () => {
                 if ((i + j) % 2 !== 0)
                     color = Colors.black;
 
-                temp.push({color: color, piece: {}, selected:false, canMove: false});
+                temp.push({position:{i:i, j:j}, color: color, piece: {}, selected:false, canMove: false});
             }
             tempBoard.push(temp);
         }
@@ -81,7 +85,7 @@ const Board: FC = () => {
             tempBoard[6][i].piece.color = Colors.white;
         }
 
-        setBoard(tempBoard);
+        dispatch({type: ActionTypes.SET_BOARD, payload:tempBoard})
     }
 
     useEffect(() => {
@@ -92,7 +96,7 @@ const Board: FC = () => {
         <div className="board">
             {board.map((row, rowIndex) => (
                 row.map((x, index) => (
-                   <Cell color={x.color} piece={x.piece} key={rowIndex + index}/>
+                   <Cell cell={x} key={rowIndex + index}/>
                 ))
             ))}
         </div>

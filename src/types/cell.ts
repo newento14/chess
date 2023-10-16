@@ -1,9 +1,9 @@
 import cell from "../components/board/cell";
 
-/*interface IPosition {
-    x:number,
-    y:number,
-}*/
+interface IPosition {
+    i:number,
+    j:number,
+}
 
 export enum Pieces {
     pawn= "pawn",
@@ -26,7 +26,7 @@ export enum Colors {
 }
 
 export interface ICell {
-    //position: IPosition,
+    position: IPosition,
     piece: Piece,
     color: Colors,
     selected: boolean,

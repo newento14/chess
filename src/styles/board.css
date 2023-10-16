@@ -11,6 +11,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
 }
 
 .board .black {
@@ -19,4 +20,25 @@
 
 .board .white {
     background-color: #eeefd3;
+}
+
+.dot {
+    width: 24px;
+    height: 24px;
+    border-radius: 20px;
+    background-color: rgba(198, 198, 198, 0.79);
+}
+
+.circle {
+    width: 64px;
+    height: 64px;
+    border-radius: 40px;
+    background-color: rgba(226, 226, 226, 0.5);
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.selected {
+    background-color: #f3f88c;
 }
