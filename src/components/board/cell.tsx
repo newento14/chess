@@ -14,7 +14,7 @@ import whiteQueen from '../../assets/whiteQueen.png';
 import whiteRook from '../../assets/whiteRook.png';
 import {useDispatch} from "react-redux";
 import {ActionTypes} from "../../types/boardReducer";
-import {bishopMove, clearBoard, knightMove, pawnMove, queenMove, rookMove} from "../../utils/pieceMoves";
+import {bishopMove, clearBoard, kingMove, knightMove, pawnMove, queenMove, rookMove} from "../../utils/pieceMoves";
 import {useTypedSelector} from "../../hooks/useTypedSelector";
 
 interface CellProps {
@@ -119,6 +119,10 @@ const Cell: FC<CellProps> = ({cell}) => {
                     queenMove(board, cell, dispatch);
                     break;
                 }
+                case Pieces.king: {
+                    kingMove(board, cell, dispatch);
+                    break;
+                }
             }
         }
 
@@ -138,12 +142,12 @@ const Cell: FC<CellProps> = ({cell}) => {
             {pieceImage !== null && cell.canMove
                 ? (
                     <>
-                        <img src={pieceImage} alt="chess piece image" />
+                        <img src={pieceImage} alt="chessPiece"/>
                         <div className='circle' ></div>
                     </>
                 )
                 : pieceImage !== null
-                    ? <img src={pieceImage} alt="chess piece image" />
+                    ? <img src={pieceImage} alt="chessPiece" />
                     : cell.canMove && <div className="dot"></div>
             }
 

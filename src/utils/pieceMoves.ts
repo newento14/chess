@@ -79,7 +79,6 @@ function checkHorizontalAndVertical(board: ICell[][], row: number, col: number) 
     }
 }
 
-
 export function clearBoard(board:ICell[][]) {
     for (let i = 0; i < 8; ++i) {
         for (let j = 0; j < 8; ++j) {
@@ -88,7 +87,7 @@ export function clearBoard(board:ICell[][]) {
     }
 }
 
-export function pawnMove(board: ICell[][], cell: ICell, dispatch: Dispatch<AnyAction>) {
+export function pawnMove(board: ICell[][], cell: ICell, dispatch?: Dispatch<AnyAction>) {
     const i = cell.position.i;
     const j = cell.position.j;
     const { color } = cell.piece;
@@ -107,34 +106,54 @@ export function pawnMove(board: ICell[][], cell: ICell, dispatch: Dispatch<AnyAc
 
     const attack = (row: number, col: number) => {
         if (i + row >= 0 && i + row <= 7 && j + col >= 0 && j + col <= 7) {
-            if (board[i + row][j + col].piece.piece !== undefined && board[i + row][j + col].piece.color !== color) {
-                board[i + row][j + col].canMove = true;
+            if(dispatch !== undefined) {
+                if (board[i + row][j + col].piece.piece !== undefined && board[i + row][j + col].piece.color !== color) {
+                    board[i + row][j + col].canMove = true;
+                }
+            } else {
+                if (board[i + row][j + col].piece.color !== color) {
+                    board[i + row][j + col].canMove = true;
+                }
             }
         }
     };
 
-    board[i][j].selected = true;
+    if(dispatch !== undefined) {
+        board[i][j].selected = true;
 
-    if (isWhite) {
-        move(-1);
-        attack(-1, -1);
-        attack(-1, 1);
+        if (isWhite) {
+            move(-1);
+            attack(-1, -1);
+            attack(-1, 1);
+        }
+
+        if (isBlack) {
+            move(1);
+            attack(1, -1);
+            attack(1, 1);
+        }
+    } else {
+        if (isWhite) {
+            attack(-1, -1);
+            attack(-1, 1);
+        }
+
+        if (isBlack) {
+            attack(1, -1);
+            attack(1, 1);
+        }
     }
 
-    if (isBlack) {
-        move(1);
-        attack(1, -1);
-        attack(1, 1);
-    }
-
-    dispatch({ type: ActionTypes.SET_BOARD, payload: board });
+    if(dispatch !== undefined)
+        dispatch({ type: ActionTypes.SET_BOARD, payload: board });
 }
 
-export function knightMove(board: ICell[][], cell: ICell, dispatch: Dispatch<AnyAction>) {
+export function knightMove(board: ICell[][], cell: ICell, dispatch?: Dispatch<AnyAction>) {
     const i = cell.position.i;
     const j = cell.position.j;
 
-    board[i][j].selected = true;
+    if(dispatch !== undefined)
+        board[i][j].selected = true;
 
     const knightMoves = [
         { row: -2, col: -1 },
@@ -156,39 +175,124 @@ export function knightMove(board: ICell[][], cell: ICell, dispatch: Dispatch<Any
         }
     }
 
-    dispatch({ type: ActionTypes.SET_BOARD, payload: board });
+    if(dispatch !== undefined)
+        dispatch({ type: ActionTypes.SET_BOARD, payload: board });
 }
 
-export function bishopMove(board: ICell[][], cell: ICell, dispatch: Dispatch<AnyAction>) {
+export function bishopMove(board: ICell[][], cell: ICell, dispatch?: Dispatch<AnyAction>) {
     const i = cell.position.i;
     const j = cell.position.j;
 
-    board[i][j].selected = true;
+    if(dispatch !== undefined)
+        board[i][j].selected = true;
 
     checkDiagonal(board, i, j);
 
-    dispatch({ type: ActionTypes.SET_BOARD, payload: board });
+    if(dispatch !== undefined)
+        dispatch({ type: ActionTypes.SET_BOARD, payload: board });
 }
 
-export function rookMove(board: ICell[][], cell: ICell, dispatch: Dispatch<AnyAction>) {
+export function rookMove(board: ICell[][], cell: ICell, dispatch?: Dispatch<AnyAction>) {
     const i = cell.position.i;
     const j = cell.position.j;
 
-    board[i][j].selected = true;
+    if(dispatch !== undefined)
+        board[i][j].selected = true;
 
     checkHorizontalAndVertical(board, i, j);
 
-    dispatch({ type: ActionTypes.SET_BOARD, payload: board });
+    if(dispatch !== undefined)
+        dispatch({ type: ActionTypes.SET_BOARD, payload: board });
 }
 
-export function queenMove(board: ICell[][], cell: ICell, dispatch: Dispatch<AnyAction>) {
+export function queenMove(board: ICell[][], cell: ICell, dispatch?: Dispatch<AnyAction>) {
     const i = cell.position.i;
     const j = cell.position.j;
 
-    board[i][j].selected = true;
+    if(dispatch !== undefined)
+        board[i][j].selected = true;
 
     checkDiagonal(board, i, j);
     checkHorizontalAndVertical(board, i, j);
+
+    if(dispatch !== undefined)
+        dispatch({ type: ActionTypes.SET_BOARD, payload: board });
+}
+
+function fillKingMoves(board: ICell[][], cell: ICell) {
+    const start = Date.now();
+
+    const color = cell.piece.color;
+
+    for (let i = 0; i < 8; ++i) {
+        for (let j = 0; j < 8; ++j) {
+            board[i][j].blackKingCanMove = true;
+            board[i][j].whiteKingCanMove = true;
+        }
+    }
+
+    for (let i = 0; i < 8; ++i) {
+        for (let j = 0; j < 8; ++j) {
+            const targetCell = board[i][j];
+
+            if (targetCell.piece.color !== color && targetCell.piece.piece !== undefined) {
+                if (targetCell.piece.piece === Pieces.pawn) {
+                    pawnMove(board, targetCell);
+                } else if (targetCell.piece.piece === Pieces.knight) {
+                    knightMove(board, targetCell);
+                } else if (targetCell.piece.piece === Pieces.bishop) {
+                    bishopMove(board, targetCell);
+                } else if (targetCell.piece.piece === Pieces.rook) {
+                    rookMove(board, targetCell);
+                } else if (targetCell.piece.piece === Pieces.queen) {
+                    queenMove(board, targetCell);
+                }
+
+
+                for (let row = 0; row < 8; ++row) {
+                    for (let col = 0; col < 8; ++col) {
+                        if (board[row][col].canMove) {
+                            if (color === Colors.white) {
+                                board[row][col].whiteKingCanMove = false;
+                            } else {
+                                board[row][col].blackKingCanMove = false;
+                            }
+                            board[row][col].canMove = false;
+                        }
+                    }
+                }
+
+            }
+        }
+    }
+    const end = Date.now();
+    console.log(end - start);
+}
+
+export function kingMove(board: ICell[][], cell: ICell, dispatch: Dispatch<AnyAction>) {
+    const i = cell.position.i;
+    const j = cell.position.j;
+
+    board[i][j].selected = true;
+    fillKingMoves(board, cell);
+
+    const color = cell.piece.color;
+
+    // Check if the king can move one square in any direction
+    for (let k = -1; k <= 1; ++k) {
+        for (let l = -1; l <= 1; ++l) {
+            if (i + k >= 0 && i + k <= 7 && j + l >= 0 && j + l <= 7) {
+                const targetCell = board[i + k][j + l];
+
+                if (targetCell.piece.piece === undefined || targetCell.piece.color !== color) {
+                    if (color === Colors.white && targetCell.whiteKingCanMove)
+                        targetCell.canMove = true;
+                    if (color === Colors.black && targetCell.blackKingCanMove)
+                        targetCell.canMove = true;
+                }
+            }
+        }
+    }
 
     dispatch({ type: ActionTypes.SET_BOARD, payload: board });
 }

@@ -1,5 +1,3 @@
-import cell from "../components/board/cell";
-
 interface IPosition {
     i:number,
     j:number,
@@ -12,7 +10,6 @@ export enum Pieces {
     bishop= "bishop",
     queen= "queen",
     king= "king",
-    none= "none",
 }
 
 export interface Piece {
@@ -31,4 +28,6 @@ export interface ICell {
     color: Colors,
     selected: boolean,
     canMove: boolean,
+    whiteKingCanMove: boolean,
+    blackKingCanMove: boolean,
 }

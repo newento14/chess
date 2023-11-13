@@ -1,8 +1,8 @@
-import React, {FC, useEffect, useState} from 'react';
+import React, {FC, useEffect} from 'react';
 import {Colors, ICell, Pieces} from "../types/cell";
 import Cell from "./board/cell";
 import '../styles/board.css'
-import {useDispatch, useSelector} from "react-redux";
+import {useDispatch} from "react-redux";
 import {useTypedSelector} from "../hooks/useTypedSelector";
 import {ActionTypes} from "../types/boardReducer";
 
@@ -19,7 +19,7 @@ const Board: FC = () => {
                 if ((i + j) % 2 !== 0)
                     color = Colors.black;
 
-                temp.push({position:{i:i, j:j}, color: color, piece: {}, selected:false, canMove: false});
+                temp.push({position:{i:i, j:j}, color: color, piece: {}, selected:false, canMove: false, blackKingCanMove: true, whiteKingCanMove: true});
             }
             tempBoard.push(temp);
         }
